@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Event Registration Form</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <form onsubmit="return validateForm();">
+      <h1>Event Registration Form</h1>
+
+      <label>First Name:</label>
+      <input type="text" id="fname" required /><br />
+
+      <label>Last Name:</label>
+      <input type="text" id="lname" required /><br />
+
+      <label>Date of Birth:</label>
+      <input type="date" required /><br />
+
+      <label>Gender:</label>
+      <input type="radio" name="gender" value="Male" /> Male
+      <input type="radio" name="gender" value="Female" /> Female
+      <br />
+
+      <label>Father's Name:</label>
+      <input type="text" required /><br />
+
+      <label>Mother's Name:</label>
+      <input type="text" required /><br />
+
+      <label>Address:</label>
+      <textarea required></textarea><br />
+
+      <label>Phone Number:</label>
+      <input type="tel" required /><br />
+
+      <label>Email:</label>
+      <input type="email" required /><br />
+
+      <h3>Education Details</h3>
+
+      <table>
+        <tr>
+          <th>Qualification</th>
+          <th>Institute</th>
+          <th>Year</th>
+          <th>Percentage</th>
+        </tr>
+
+        <tr>
+          <td>10th</td>
+          <td><input type="text" /></td>
+          <td><input type="text" /></td>
+          <td><input type="text" /></td>
+        </tr>
+
+        <tr>
+          <td>12th</td>
+          <td><input type="text" /></td>
+          <td><input type="text" /></td>
+          <td><input type="text" /></td>
+        </tr>
+
+        <tr>
+          <td>Degree</td>
+          <td><input type="text" /></td>
+          <td><input type="text" /></td>
+          <td><input type="text" /></td>
+        </tr>
+      </table>
+
+      <br />
+
+      <label>Upload Photo:</label>
+      <input type="file" accept="image/*" /><br />
+
+      <label>Upload Signature:</label>
+      <input type="file" accept="image/*" /><br />
+
+      <center>
+        <button type="submit">Register</button>
+      </center>
+    </form>
+
+    <script src="script.js"></script>
+  </body>
+</html>
