@@ -1,0 +1,1642 @@
+Absolutely. Let's consolidate your complete DevOps Lab Internal-2 preparation into one practical guide, covering all 11 questions from your uploaded question paper.
+
+I'll keep the programs simple, the installation procedures step-by-step, and the commands ready to reproduce in your lab examination.
+
+# DevOps Lab Internal-2: Complete practical guide
+
+CS552PC | DevOps Lab
+
+11 questions
+
+# 11 / 11
+
+Complete question-wise preparation checklist
+
+- Q1–Q5: Docker and Docker Compose
+- Q6–Q7: Kubernetes
+- Q8–Q11: Selenium automation testing
+
+## Part 1: Docker
+
+# Q1. Docker installation, requirements and commands
+
+### A. Minimum system requirements
+
+| Component        | Requirement                      |
+| ---------------- | -------------------------------- |
+| Operating system | Windows 10/11, supported edition |
+| Processor        | 64-bit processor                 |
+| RAM              | 4 GB minimum, 8 GB recommended   |
+| Virtualization   | Enabled in BIOS                  |
+| WSL 2            | Required for Windows WSL backend |
+| Storage          | Sufficient free disk space       |
+
+### B. Docker installation steps
+
+1. Visit [Docker official website](https://www.docker.com/products/docker-desktop/?utm_source=chatgpt.com).
+2. Download Docker Desktop for Windows.
+3. Enable WSL 2.
+4. Run the installer.
+5. Select the WSL 2 backend.
+6. Complete installation.
+7. Restart if required.
+8. Launch Docker Desktop.
+9. Wait until Docker Engine starts.
+
+### C. Verify installation
+
+```
+docker --version
+docker info
+docker run hello-world
+```
+
+### D. Important Docker commands
+
+| Command                   | Purpose                 |
+| ------------------------- | ----------------------- |
+| `docker images`           | List images             |
+| `docker ps`               | List running containers |
+| `docker ps -a`            | List all containers     |
+| `docker pull ubuntu`      | Download image          |
+| `docker run ubuntu`       | Run container           |
+| `docker start ID`         | Start container         |
+| `docker stop ID`          | Stop container          |
+| `docker restart ID`       | Restart container       |
+| `docker rm ID`            | Remove container        |
+| `docker rmi IMAGE`        | Remove image            |
+| `docker logs ID`          | View logs               |
+| `docker exec -it ID bash` | Enter container         |
+| `docker build -t name .`  | Build image             |
+
+Viva: Docker is a platform used to package and run applications in isolated containers.
+
+# Q2. Java Calculator using Docker
+
+### Step 1. Create folder
+
+```
+JavaCalculator/
+    Calculator.java
+    Dockerfile
+```
+
+### Step 2. Java program
+
+Calculator.java
+
+```
+
+import java.util.Scanner;
+
+public class Calculator {
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter first number: ");
+        double a = sc.nextDouble();
+
+        System.out.print("Enter operator (+,-,*,/): ");
+        char op = sc.next().charAt(0);
+
+        System.out.print("Enter second number: ");
+        double b = sc.nextDouble();
+
+        double result = 0;
+
+        switch(op) {
+            case '+': result = a + b; break;
+            case '-': result = a - b; break;
+            case '*': result = a * b; break;
+
+            case '/':
+                if(b != 0)
+                    result = a / b;
+                else {
+                    System.out.println("Division by zero!");
+                    sc.close();
+                    return;
+                }
+                break;
+
+            default:
+                System.out.println("Invalid operator");
+                sc.close();
+                return;
+        }
+
+        System.out.println("Result = " + result);
+        sc.close();
+    }
+}
+
+```
+
+### Step 3. Dockerfile
+
+Dockerfile (no extension)
+
+```
+
+FROM eclipse-temurin:17-jdk
+
+WORKDIR /app
+
+COPY Calculator.java .
+
+RUN javac Calculator.java
+
+CMD ["java", "Calculator"]
+
+```
+
+### Step 4. Build and run
+
+```
+docker build -t java-calculator .
+docker run -it java-calculator
+```
+
+### Expected output
+
+```
+Enter first number: 20
+Enter operator (+,-,*,/): +
+Enter second number: 10
+Result = 30.0
+```
+
+Remember: JDK does not need to be installed locally because the Docker image contains JDK 17.
+
+# Q3. Python Number Guessing Game using Docker
+
+### Step 1. Create folder
+
+```
+PythonGuessGame/
+    guess.py
+    Dockerfile
+```
+
+### Step 2. Python program
+
+guess.py
+
+```
+import randomnumber = random.randint(1, 100)print("Welcome to Number Guessing Game!")while True:    guess = int(input("Guess a number: "))    if guess < number:        print("Too low!")    elif guess > number:        print("Too high!")    else:        print("Congratulations! Correct guess!")        break
+```
+
+### Step 3. Dockerfile
+
+```
+
+FROM python:3.12-slim
+
+WORKDIR /app
+
+COPY guess.py .
+
+CMD ["python", "guess.py"]
+
+```
+
+### Step 4. Build and run
+
+```
+docker build -t python-guess .
+docker run -it python-guess
+```
+
+### Expected output
+
+```
+Welcome to Number Guessing Game!
+Guess a number: 50
+Too low!
+Guess a number: 75
+Too high!
+Guess a number: 60
+Congratulations! Correct guess!
+```
+
+Remember: Python is interpreted, so a separate compilation command is not required.
+
+# Q4. Registration and Login Web Application using Docker
+
+### Step 1. Create folder structure
+
+```
+DockerWebApp/
+│
+├── app.py
+├── requirements.txt
+├── Dockerfile
+│
+└── templates/
+    ├── register.html
+    └── login.html
+```
+
+### Step 2. Flask application
+
+app.py
+
+```
+from flask import Flask, render_template, requestapp = Flask(__name__)users = {}@app.route('/')def home():    return render_template('register.html')@app.route('/register', methods=['POST'])def register():    name = request.form['name']    email = request.form['email']    password = request.form['password']    users[email] = password    return "Registration Successful!"@app.route('/login', methods=['GET', 'POST'])def login():    if request.method == 'POST':        email = request.form['email']        password = request.form['password']        if email in users and users[email] == password:            return "Login Successful!"        return "Invalid Email or Password!"    return render_template('login.html')if __name__ == '__main__':    app.run(host='0.0.0.0', port=5000)
+```
+
+### Step 3. Registration page
+
+templates/register.html
+
+```
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registration</title>
+</head>
+<body>
+    <h2>User Registration</h2>
+
+    <form action="/register" method="POST">
+        Name:
+        <input type="text" name="name" required>
+        <br><br>
+
+        Email:
+        <input type="email" name="email" required>
+        <br><br>
+
+        Password:
+        <input type="password" name="password" required>
+        <br><br>
+
+        <button type="submit">Register</button>
+    </form>
+
+    <a href="/login">Login here</a>
+</body>
+</html>
+
+```
+
+### Step 4. Login page
+
+templates/login.html
+
+```
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+</head>
+<body>
+    <h2>User Login</h2>
+
+    <form action="/login" method="POST">
+        Email:
+        <input type="email" name="email" required>
+        <br><br>
+
+        Password:
+        <input type="password" name="password" required>
+        <br><br>
+
+        <button type="submit">Login</button>
+    </form>
+
+    <a href="/">Register here</a>
+</body>
+</html>
+
+```
+
+### Step 5. requirements.txt
+
+```
+Flask
+```
+
+### Step 6. Dockerfile
+
+```
+
+FROM python:3.12-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+EXPOSE 5000
+
+CMD ["python", "app.py"]
+
+```
+
+### Step 7. Build and run
+
+```
+docker build -t registration-app .
+
+docker run -d -p 5000:5000 --name my-web-app registration-app
+```
+
+### Step 8. Open browser
+
+[http://localhost:5000](http://localhost:5000?utm_source=chatgpt.com)
+
+Test registration and login.
+
+### Step 9. Useful commands
+
+```
+docker ps
+docker logs my-web-app
+docker stop my-web-app
+docker start my-web-app
+docker rm -f my-web-app
+```
+
+Viva: `-p 5000:5000` maps the host port 5000 to the container port 5000.
+
+# Q5. Docker Compose program for two Python services
+
+### Step 1. Folder structure
+
+```
+DockerComposeApp/
+│
+├── docker-compose.yml
+│
+├── web/
+│   ├── app.py
+│   └── Dockerfile
+│
+└── message/
+    ├── app.py
+    └── Dockerfile
+```
+
+### Step 2. Web service
+
+web/app.py
+
+```
+from flask import Flaskimport requestsapp = Flask(__name__)@app.route('/')def home():    response = requests.get(        'http://message:5001/message'    )    return "Web Service: " + response.textif __name__ == '__main__':    app.run(host='0.0.0.0', port=5000)
+```
+
+### Step 3. Message service
+
+message/app.py
+
+```
+from flask import Flaskapp = Flask(__name__)@app.route('/message')def message():    return "Hello from Python Message Service!"if __name__ == '__main__':    app.run(host='0.0.0.0', port=5001)
+```
+
+### Step 4. Web Dockerfile
+
+web/Dockerfile
+
+```
+
+FROM python:3.12-slim
+
+WORKDIR /app
+
+RUN pip install flask requests
+
+COPY app.py .
+
+EXPOSE 5000
+
+CMD ["python", "app.py"]
+
+```
+
+### Step 5. Message Dockerfile
+
+message/Dockerfile
+
+```
+
+FROM python:3.12-slim
+
+WORKDIR /app
+
+RUN pip install flask
+
+COPY app.py .
+
+EXPOSE 5001
+
+CMD ["python", "app.py"]
+
+```
+
+### Step 6. Docker Compose YAML
+
+docker-compose.yml
+
+```
+
+services:
+
+  web:
+    build: ./web
+    ports:
+      - "5000:5000"
+    depends_on:
+      - message
+
+  message:
+    build: ./message
+    ports:
+      - "5001:5001"
+
+```
+
+### Step 7. Execute
+
+```
+docker compose up --build -d
+```
+
+Check containers:
+
+```
+docker compose ps
+```
+
+Open:
+
+[http://localhost:5000](http://localhost:5000?utm_source=chatgpt.com)
+
+Expected output:
+
+```
+Web Service: Hello from Python Message Service!
+```
+
+Stop everything:
+
+```
+docker compose down
+```
+
+Viva: Docker Compose manages multiple containers using a YAML configuration file.
+
+## Part 2: Kubernetes
+
+# Q6. Installation of Kubernetes and Docker integration, with basic Kubernetes commands
+
+### A. What is Kubernetes?
+
+Kubernetes is an open-source container orchestration platform used to deploy, manage, scale and monitor containerized applications.
+
+Docker vs Kubernetes
+
+| Docker                        | Kubernetes                         |
+| ----------------------------- | ---------------------------------- |
+| Builds and runs containers    | Orchestrates containers            |
+| Manages individual containers | Manages containerized applications |
+| Uses Docker commands          | Uses kubectl commands              |
+| Container platform            | Orchestration platform             |
+
+### B. Kubernetes architecture
+
+[The Kubernetes architecture​ simplified](https://images.openai.com/static-rsc-4/veT2X82uokBUJM66XJXEGldoXN_PQYVYfGxsaiLzUjQGvoh9lHuD0jqCIIqClCSzB7JLqQ8DtjKaU1gd3kuGmtNZkrXKzBrDa7vm9noR2tjDs2M8SPi_-9PHqsumfg7MjpimQ6oz_EKwvmA54lrrXoTM9VbkS7Ro43l56z82Idc?purpose=inline)
+
+[educative.io](https://www.educative.io/edpresso/the-kubernetes-architecture-simplified?utm_source=chatgpt.com)
+
+Important components:
+
+| Component          | Purpose                             |
+| ------------------ | ----------------------------------- |
+| Control Plane      | Manages the cluster                 |
+| API Server         | Receives Kubernetes requests        |
+| Scheduler          | Assigns Pods to nodes               |
+| Controller Manager | Maintains desired state             |
+| Worker Node        | Runs application workloads          |
+| Pod                | Smallest deployable Kubernetes unit |
+| Kubelet            | Manages Pods on a node              |
+
+### C. Installation steps (Windows using Minikube)
+
+For your lab, Minikube is a convenient way to run a local Kubernetes cluster.
+
+Step 1: Install Docker Desktop
+
+Download and install:
+
+[Docker Desktop](https://www.docker.com/products/docker-desktop/?utm_source=chatgpt.com)
+
+Start Docker Desktop and verify:
+
+```
+docker --version
+```
+
+Step 2: Install kubectl
+
+Open PowerShell as Administrator:
+
+```
+winget install -e --id Kubernetes.kubectl
+```
+
+Verify:
+
+```
+kubectl version --client
+```
+
+Step 3: Install Minikube
+
+```
+winget install -e --id Kubernetes.minikube
+```
+
+Verify:
+
+```
+minikube version
+```
+
+Step 4: Start Kubernetes cluster
+
+Make sure Docker Desktop is running.
+
+```
+minikube start --driver=docker
+```
+
+Step 5: Verify cluster
+
+```
+kubectl cluster-info
+kubectl get nodes
+```
+
+You should see your Minikube node in Ready status.
+
+[Getting started with Kubernetes | Opensource.com](https://images.openai.com/static-rsc-4/v9oNfU7wHgqqxIyYPJEAHamSrhZC_AsY_kp2arbs20AyX9gNfvu2igDKMGlqVHOx6aTEscSpvOJveYHwv2AC2KMPLCgYG90_6lkXGA_2COwKtVglC3ZuLgGG5c9ZD15d1ntQo1oikWzqaOJVEZDZMKJJxuHfu_4UZQ117S2DxdY?purpose=inline)
+
+[opensource.com](https://opensource.com/article/17/11/getting-started-kubernetes?utm_source=chatgpt.com)
+
+### D. Basic Kubernetes commands
+
+| Command                          | Purpose                           |
+| -------------------------------- | --------------------------------- |
+| `kubectl cluster-info`           | Displays cluster information      |
+| `kubectl get nodes`              | Lists nodes                       |
+| `kubectl get pods`               | Lists Pods                        |
+| `kubectl get deployments`        | Lists Deployments                 |
+| `kubectl get services`           | Lists Services                    |
+| `kubectl describe pod NAME`      | Shows Pod details                 |
+| `kubectl logs POD`               | Displays Pod logs                 |
+| `kubectl delete pod NAME`        | Deletes a Pod                     |
+| `kubectl delete deployment NAME` | Deletes Deployment                |
+| `kubectl apply -f file.yaml`     | Applies YAML configuration        |
+| `kubectl delete -f file.yaml`    | Deletes resources defined in YAML |
+
+### E. Try a simple Kubernetes Pod
+
+Create a file named `pod.yaml`.
+
+```
+
+apiVersion: v1
+kind: Pod
+
+metadata:
+  name: mypod
+
+spec:
+  containers:
+    - name: nginx
+      image: nginx
+      ports:
+        - containerPort: 80
+
+```
+
+Run:
+
+```
+kubectl apply -f pod.yaml
+kubectl get pods
+kubectl describe pod mypod
+```
+
+Delete:
+
+```
+kubectl delete -f pod.yaml
+```
+
+### F. Stop Kubernetes
+
+```
+minikube stop
+```
+
+To delete the cluster completely:
+
+```
+minikube delete
+```
+
+Important viva point: Kubernetes can run OCI-compatible images built using Docker. Modern Kubernetes normally uses containerd or another CRI-compatible runtime rather than the old direct Docker Engine integration.
+
+# Q7. Automate running a containerized web application using Kubernetes
+
+This question uses Kubernetes YAML files to automatically deploy and expose a web application.
+
+We'll use Nginx because it is simple and doesn't require writing application code.
+
+### Step 1. Create project folder
+
+```
+KubernetesWebApp/
+    deployment.yaml
+    service.yaml
+```
+
+### Step 2. Create deployment.yaml
+
+```
+
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: web-deployment
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: web
+
+  template:
+    metadata:
+      labels:
+        app: web
+
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+
+```
+
+### Explanation
+
+| Instruction         | Meaning                       |
+| ------------------- | ----------------------------- |
+| `apiVersion`        | Kubernetes API version        |
+| `kind: Deployment`  | Creates a Deployment          |
+| `metadata`          | Defines resource name         |
+| `replicas: 2`       | Runs two Pod replicas         |
+| `selector`          | Identifies matching Pods      |
+| `template`          | Defines the Pod specification |
+| `image: nginx`      | Uses Nginx image              |
+| `containerPort: 80` | Application container port    |
+
+### Step 3. Create service.yaml
+
+This file exposes our application.
+
+```
+
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: web-service
+
+spec:
+  type: NodePort
+
+  selector:
+    app: web
+
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30080
+
+```
+
+### Explanation
+
+- `type: NodePort` exposes the application through a port on the node.
+- `port: 80` is the Service port.
+- `targetPort: 80` is the container port.
+- `nodePort: 30080` is the externally accessible node port.
+
+### Step 4. Start Minikube
+
+```
+minikube start --driver=docker
+```
+
+### Step 5. Deploy the application
+
+Navigate to your project folder.
+
+```
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
+```
+
+### Step 6. Verify the deployment
+
+```
+kubectl get deployments
+kubectl get pods
+kubectl get services
+```
+
+You should see two Pods running.
+
+### Step 7. Access the application
+
+Execute:
+
+```
+minikube service web-service
+```
+
+Minikube will open the service in your browser.
+
+You should see the default Nginx welcome page.
+
+[Installing a Web Server on Linux](https://images.openai.com/static-rsc-4/B_3jz01F3rqVqhqfaBLu9kWIeXZljet99ARInh4nUITIikgYUt9XlY8fxZsfFiVW72aIxVJ3L4gUySidbFyyYiuSq5oyIvYIi2G01E2IVyDV1vuf6cGYfJmCbGW33PI20ByZInXQ87fr61mB0lvKpIRwK1Yzh0LkUAskc9aq-go?purpose=inline)
+
+[noob2poweruser.com](https://www.noob2poweruser.com/installing-a-web-server-on-linux/?utm_source=chatgpt.com)
+
+### Step 8. Scaling the application
+
+To increase the number of Pods:
+
+```
+kubectl scale deployment web-deployment --replicas=4
+```
+
+Verify:
+
+```
+kubectl get pods
+```
+
+Now four Pods should be running.
+
+### Step 9. Delete the application
+
+```
+kubectl delete -f service.yaml
+kubectl delete -f deployment.yaml
+```
+
+Q7 completed
+
+Important viva questions:
+
+1. What is a Pod? Smallest deployable unit in Kubernetes.
+2. What is a Deployment? Manages application Pods and their replicas.
+3. What is a Service? Provides a stable network endpoint for Pods.
+4. What is scaling? Increasing or decreasing the number of replicas.
+5. What is NodePort? Exposes a Service on a port of each node.
+
+## Part 3: Selenium automation testing
+
+# Q8. Install Selenium and run a simple Java application for automated testing
+
+### A. What is Selenium?
+
+Selenium is an open-source tool used to automate web browsers for testing web applications.
+
+It supports programming languages such as:
+
+- Java
+- Python
+- JavaScript
+- C#
+
+### B. Requirements
+
+| Software                     | Purpose               |
+| ---------------------------- | --------------------- |
+| JDK 17                       | Runs Java programs    |
+| Eclipse / IntelliJ / VS Code | IDE                   |
+| Maven                        | Dependency management |
+| Selenium WebDriver           | Browser automation    |
+| Google Chrome                | Browser to automate   |
+
+### C. Installation steps
+
+Step 1. Install JDK 17
+
+Download:
+
+[Eclipse Temurin JDK](https://adoptium.net/temurin/releases/?utm_source=chatgpt.com)
+
+Verify:
+
+```
+java -version
+javac -version
+```
+
+Step 2. Install Eclipse
+
+[Eclipse IDE download](https://www.eclipse.org/downloads/?utm_source=chatgpt.com)
+
+Step 3. Create a Maven project
+
+In Eclipse:
+
+1. Select File.
+2. Select New → Maven Project.
+3. Select Create a simple project.
+4. Enter Group ID: `com.example`
+5. Enter Artifact ID: `SeleniumTest`.
+6. Finish.
+
+Step 4. Add Selenium dependency
+
+Open `pom.xml` and add this dependency inside `dependencies`:
+
+```
+
+<dependency>
+    <groupId>org.seleniumhq.selenium</groupId>
+    <artifactId>selenium-java</artifactId>
+    <version>4.38.0</version>
+</dependency>
+
+```
+
+Maven downloads the required Selenium libraries.
+
+### D. Create a simple HTML test page
+
+Create `test.html`:
+
+```
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Selenium Test</title>
+</head>
+<body>
+    <h2 id="heading">Welcome to Selenium</h2>
+
+    <button id="btn" onclick="
+        document.getElementById('heading')
+        .innerHTML='Button Clicked Successfully!';
+    ">
+        Click Me
+    </button>
+</body>
+</html>
+
+```
+
+### E. Java Selenium program
+
+Create `SeleniumTest.java` inside your Maven project's `src/main/java` folder.
+
+```
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class SeleniumTest {
+
+    public static void main(String[] args) {
+
+        WebDriver driver = new ChromeDriver();
+
+        try {
+            driver.get("file:///C:/Selenium/test.html");
+
+            System.out.println("Title: " +
+                driver.getTitle());
+
+            WebElement button =
+                driver.findElement(By.id("btn"));
+
+            button.click();
+
+            String result = driver.findElement(
+                By.id("heading")).getText();
+
+            System.out.println(result);
+
+        } finally {
+            driver.quit();
+        }
+    }
+}
+
+```
+
+Replace `C:/Selenium/test.html` with the actual location of your HTML file.
+
+### F. Execute the program
+
+1. Make sure Chrome is installed.
+2. Maven downloads Selenium dependencies.
+3. Run `SeleniumTest.java`.
+4. Chrome opens automatically.
+5. Selenium clicks the button.
+6. The result is printed in the console.
+
+Selenium 4 includes Selenium Manager, which can automatically manage compatible browser drivers in typical supported environments.
+
+Expected output:
+
+```
+Title: Selenium Test
+Button Clicked Successfully!
+```
+
+Q8 completed
+
+# Q9. Install Selenium and run JavaScript code for web application automated testing
+
+This question uses Selenium with JavaScript instead of Java.
+
+### A. Requirements
+
+- Node.js
+- npm
+- Google Chrome
+- Selenium WebDriver package
+- VS Code (optional)
+
+### B. Installation steps
+
+Step 1. Install Node.js
+
+Visit:
+
+[Node.js official website](https://nodejs.org/?utm_source=chatgpt.com)
+
+Install the LTS version.
+
+Verify:
+
+```
+node -v
+npm -v
+```
+
+Step 2. Create project
+
+```
+mkdir SeleniumJS
+cd SeleniumJS
+```
+
+Step 3. Initialize project
+
+```
+npm init -y
+```
+
+Step 4. Install Selenium
+
+```
+npm install selenium-webdriver
+```
+
+### C. Create HTML page
+
+Create `index.html`:
+
+```
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JavaScript Selenium Test</title>
+</head>
+<body>
+
+    <h2 id="message">Welcome</h2>
+
+    <button id="btn"
+    onclick="document.getElementById('message')
+    .innerHTML='Testing Successful!'">
+        Click Me
+    </button>
+
+</body>
+</html>
+
+```
+
+### D. JavaScript Selenium program
+
+Create `test.js`:
+
+```
+
+const { Builder, By } = require('selenium-webdriver');
+
+async function test() {
+
+    let driver = await new Builder()
+        .forBrowser('chrome')
+        .build();
+
+    try {
+
+        await driver.get(
+            'file:///C:/SeleniumJS/index.html'
+        );
+
+        let title = await driver.getTitle();
+
+        console.log("Title:", title);
+
+        let button = await driver.findElement(
+            By.id('btn')
+        );
+
+        await button.click();
+
+        let result = await driver.findElement(
+            By.id('message')
+        ).getText();
+
+        console.log(result);
+
+    } finally {
+        await driver.quit();
+    }
+}
+
+test();
+
+```
+
+Replace the file URL with your actual HTML file location.
+
+### E. Execute
+
+```
+node test.js
+```
+
+Expected output:
+
+```
+Title: JavaScript Selenium Test
+Testing Successful!
+```
+
+Viva: `async` and `await` are used because Selenium JavaScript operations are asynchronous.
+
+Q9 completed
+
+# Q10. Simple Calculator in JavaScript and testing using Selenium
+
+Here we create a calculator using HTML and JavaScript, then automate its testing using Selenium WebDriver.
+
+### Step 1. Create project folder
+
+```
+SeleniumCalculator/
+│
+├── calculator.html
+├── test.js
+└── package.json
+```
+
+### Step 2. Create calculator.html
+
+```
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JavaScript Calculator</title>
+</head>
+<body>
+
+    <h2>Simple Calculator</h2>
+
+    <input type="number" id="num1"
+           placeholder="First number">
+
+    <input type="number" id="num2"
+           placeholder="Second number">
+
+    <br><br>
+
+    <select id="operator">
+        <option value="+">Addition</option>
+        <option value="-">Subtraction</option>
+        <option value="*">Multiplication</option>
+        <option value="/">Division</option>
+    </select>
+
+    <button id="calculate"
+            onclick="calculate()">
+        Calculate
+    </button>
+
+    <h3 id="result">Result:</h3>
+
+    <script>
+        function calculate() {
+
+            let a = Number(
+                document.getElementById("num1").value
+            );
+
+            let b = Number(
+                document.getElementById("num2").value
+            );
+
+            let op = document.getElementById(
+                "operator"
+            ).value;
+
+            let result;
+
+            switch(op) {
+                case "+":
+                    result = a + b;
+                    break;
+
+                case "-":
+                    result = a - b;
+                    break;
+
+                case "*":
+                    result = a * b;
+                    break;
+
+                case "/":
+                    result = b !== 0
+                        ? a / b
+                        : "Cannot divide by zero";
+                    break;
+            }
+
+            document.getElementById("result")
+                .innerHTML = "Result: " + result;
+        }
+    </script>
+
+</body>
+</html>
+
+```
+
+### Step 3. Install Selenium
+
+Open terminal inside the project folder:
+
+```
+npm init -y
+npm install selenium-webdriver
+```
+
+If you already installed Selenium in Q9, you can reuse that project setup.
+
+### Step 4. Create Selenium testing program
+
+test.js
+
+```
+
+const { Builder, By } = require('selenium-webdriver');
+
+async function testCalculator() {
+
+    let driver = await new Builder()
+        .forBrowser('chrome')
+        .build();
+
+    try {
+
+        await driver.get(
+            'file:///C:/SeleniumCalculator/calculator.html'
+        );
+
+        await driver.findElement(By.id('num1'))
+            .sendKeys('20');
+
+        await driver.findElement(By.id('num2'))
+            .sendKeys('10');
+
+        await driver.findElement(By.id('operator'))
+            .sendKeys('+');
+
+        await driver.findElement(By.id('calculate'))
+            .click();
+
+        let result = await driver.findElement(
+            By.id('result')
+        ).getText();
+
+        console.log(result);
+
+    } finally {
+        await driver.quit();
+    }
+}
+
+testCalculator();
+
+```
+
+Change the file URL to your actual location.
+
+### Step 5. Execute the program
+
+```
+node test.js
+```
+
+Expected output:
+
+```
+Result: 30
+```
+
+### Step 6. Test different operations
+
+| First number | Second number | Operator | Expected result |
+| ------------ | ------------- | -------- | --------------- |
+| 20           | 10            | +        | 30              |
+| 20           | 10            | -        | 10              |
+| 20           | 10            | \*       | 200             |
+| 20           | 10            | /        | 2               |
+
+Q10 completed
+
+Viva questions:
+
+1. What is JavaScript? A scripting language used to make web pages interactive.
+2. What is Selenium WebDriver? A browser automation interface.
+3. What is `findElement()`? Locates an element on a web page.
+4. What is `sendKeys()`? Enters text into an element.
+5. What is `click()`? Performs a click action.
+
+# Q11. Develop test cases for a simple registration form using Selenium
+
+This is the final question!
+
+We will create a registration form and automate multiple test cases using Selenium with JavaScript.
+
+### Step 1. Create project folder
+
+```
+RegistrationTesting/
+│
+├── register.html
+└── test.js
+```
+
+### Step 2. Create registration form
+
+register.html
+
+```
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registration Form</title>
+</head>
+<body>
+
+    <h2>User Registration</h2>
+
+    <form id="registerForm">
+
+        <label>Name:</label>
+        <input type="text" id="name" required>
+
+        <br><br>
+
+        <label>Email:</label>
+        <input type="email" id="email" required>
+
+        <br><br>
+
+        <label>Password:</label>
+        <input type="password" id="password"
+               required minlength="6">
+
+        <br><br>
+
+        <button type="submit" id="submit">
+            Register
+        </button>
+
+    </form>
+
+    <h3 id="message"></h3>
+
+    <script>
+        document.getElementById("registerForm")
+            .addEventListener("submit", function(e) {
+
+                e.preventDefault();
+
+                document.getElementById("message")
+                    .innerHTML =
+                    "Registration Successful!";
+
+            });
+    </script>
+
+</body>
+</html>
+
+```
+
+### Step 3. Install Selenium
+
+Open terminal:
+
+```
+npm init -y
+npm install selenium-webdriver
+```
+
+### Step 4. Write Selenium test program
+
+test.js
+
+```
+
+const { Builder, By } = require('selenium-webdriver');
+
+async function registrationTest() {
+
+    let driver = await new Builder()
+        .forBrowser('chrome')
+        .build();
+
+    try {
+
+        await driver.get(
+            'file:///C:/RegistrationTesting/register.html'
+        );
+
+        // Enter name
+        await driver.findElement(By.id('name'))
+            .sendKeys('Karan');
+
+        // Enter email
+        await driver.findElement(By.id('email'))
+            .sendKeys('karan@gmail.com');
+
+        // Enter password
+        await driver.findElement(By.id('password'))
+            .sendKeys('123456');
+
+        // Click register
+        await driver.findElement(By.id('submit'))
+            .click();
+
+        // Verify result
+        let result = await driver.findElement(
+            By.id('message')
+        ).getText();
+
+        console.log(result);
+
+    } finally {
+        await driver.quit();
+    }
+}
+
+registrationTest();
+
+```
+
+### Step 5. Execute
+
+```
+node test.js
+```
+
+Expected output:
+
+```
+Registration Successful!
+```
+
+### Step 6. Important test cases
+
+For the examination, write the following test cases.
+
+| Test case | Input                              | Expected result         |
+| --------- | ---------------------------------- | ----------------------- |
+| TC01      | Valid name, email and password     | Registration successful |
+| TC02      | Empty name                         | Validation error        |
+| TC03      | Invalid email                      | Validation error        |
+| TC04      | Empty password                     | Validation error        |
+| TC05      | Password shorter than 6 characters | Validation error        |
+| TC06      | All valid fields                   | Registration successful |
+
+### Step 7. Selenium testing methods
+
+| Method          | Purpose          |
+| --------------- | ---------------- |
+| `get()`         | Opens webpage    |
+| `findElement()` | Locates element  |
+| `sendKeys()`    | Enters input     |
+| `click()`       | Clicks button    |
+| `getText()`     | Reads text       |
+| `getTitle()`    | Reads page title |
+| `quit()`        | Closes browser   |
+
+Q11 completed
+
+Important note: The HTML uses browser-native validation through `required`, `type="email"` and `minlength`. The test program above demonstrates the valid registration flow. To test invalid cases properly, submit each invalid input and verify that the browser blocks submission.
+
+## Additional Q11: Testing invalid registration inputs
+
+You can demonstrate a negative test case using Selenium's `checkValidity()` method.
+
+Add this code to a separate JavaScript test:
+
+```
+const { Builder, By } = require('selenium-webdriver');
+
+async function invalidTest() {
+
+    let driver = await new Builder()
+        .forBrowser('chrome')
+        .build();
+
+    try {
+
+        await driver.get(
+            'file:///C:/RegistrationTesting/register.html'
+        );
+
+        let form = await driver.findElement(
+            By.id('registerForm')
+        );
+
+        let valid = await driver.executeScript(
+            'return arguments[0].checkValidity()', form
+        );
+
+        console.log("Form valid:", valid);
+
+    } finally {
+        await driver.quit();
+    }
+}
+
+invalidTest();
+```
+
+Expected output:
+
+```
+Form valid: false
+```
+
+This verifies that the empty registration form fails HTML validation.
+
+# Final revision: All 11 questions at a glance
+
+Here is your complete examination checklist.
+
+| Q.No. | Practical                        | Main files / concepts         |
+| ----- | -------------------------------- | ----------------------------- |
+| 1     | Docker installation and commands | Docker CLI                    |
+| 2     | Java Calculator                  | `.java`, Dockerfile           |
+| 3     | Python Guessing Game             | `.py`, Dockerfile             |
+| 4     | Registration and Login           | Flask, HTML, Dockerfile       |
+| 5     | Two Python services              | Two Dockerfiles, Compose YAML |
+| 6     | Kubernetes installation          | Minikube, kubectl, Pod        |
+| 7     | Kubernetes web deployment        | Deployment YAML, Service YAML |
+| 8     | Selenium with Java               | JDK, Maven, Selenium          |
+| 9     | Selenium with JavaScript         | Node.js, npm, WebDriver       |
+| 10    | JavaScript Calculator testing    | HTML, JavaScript, Selenium    |
+| 11    | Registration form testing        | HTML, Selenium test cases     |
+
+## Most important commands to memorize
+
+Docker
+
+```
+docker build -t app .
+docker run -it app
+docker ps
+docker images
+docker stop ID
+docker rm ID
+```
+
+Docker Compose
+
+```
+docker compose up --build -d
+docker compose ps
+docker compose logs
+docker compose down
+```
+
+Kubernetes
+
+```
+minikube start --driver=docker
+kubectl get nodes
+kubectl get pods
+kubectl get deployments
+kubectl get services
+kubectl apply -f deployment.yaml
+kubectl delete -f deployment.yaml
+```
+
+Selenium JavaScript
+
+```
+npm init -y
+npm install selenium-webdriver
+node test.js
+```
+
+Selenium Java
+
+```
+java -version
+mvn test
+```
+
+The Java project must have its Selenium dependency and test configuration set up before using Maven to execute tests.
+
+## My recommended preparation priority
+
+If you have limited revision time, prioritize these:
+
+1. Q2 and Q3: Easy programs, straightforward Dockerfiles.
+2. Q4 and Q5: Important Docker concepts and multiple files.
+3. Q6 and Q7: Understand Kubernetes YAML and commands.
+4. Q8 and Q9: Memorize Selenium installation and execution.
+5. Q10 and Q11: Practise Selenium element identification, input and click operations.
+
+One important distinction: Q8 uses Java Selenium, while Q9–Q11 can share the same JavaScript Selenium installation.
+
+A note about the practical implementations: These are simplified educational versions. For Q4, user data is held in memory rather than a database. For Q5, `depends_on` controls startup order, not application readiness. These are fine starting points for understanding the lab exercises.
+
+## Let's test your exam readiness
+
+Your practical readiness tracker
+
+# 0/11
+
+I can write a Dockerfile without looking.
+
+I can build and run a Java Docker container.
+
+I can build and run a Python Docker container.
+
+I can create a Flask registration application.
+
+I can write a Docker Compose YAML file.
+
+I can install Minikube and kubectl.
+
+I can write Kubernetes Deployment and Service YAML.
+
+I can configure Selenium with Java.
+
+I can configure Selenium with JavaScript.
+
+I can automate a calculator using Selenium.
+
+I can write registration form test cases.
+
+My advice: Don't just read these programs. Type them once, execute them once, and then try writing them without looking. That is the fastest way to prepare for a practical examination.
+
+You've got all 11 questions covered. Now let's focus on being able to execute them independently. 💪
